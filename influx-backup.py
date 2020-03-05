@@ -133,7 +133,7 @@ def dump(db, where):
     # Get measurement fields.
     queries = []
     for m in measurements:
-        queries.append(f'SHOW FIELD KEYS FROM "{m}"')
+        queries.append(f'SHOW FIELD KEYS FROM "{db}"."{RETENTION}"."{m}"')
 
     data = query_influxdb(params={'q': ';'.join(queries), 'db': db})
     msfields = {}
