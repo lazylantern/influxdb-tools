@@ -22,7 +22,7 @@ WRITE_CHUNK_SIZE = 5000
 
 def query_influxdb(params):
     """Run query on influxdb."""
-    r = requests.get(URL+'/query', auth=AUTH, params=params)
+    r = requests.get(URL+'/query', auth=AUTH, params=params,  verify=VERIFY)
     if r.status_code != 200:
         print(params)
         print(r.status_code, r.text)
@@ -59,7 +59,8 @@ def filter_measurements(measurements):
 def chunked_read(db, query):
     """Chunked request to InfluxDB."""
     r = requests.get(URL+'/query', auth=AUTH, stream=True,
-                     params={'q': query, 'db': db, 'epoch': 'ns', 'chunked': 'true', 'chunk_size': READ_CHUCK_SIZE})
+                     params={'q': query, 'db': db, 'epoch': 'ns', 'chunked': 'true', 'chunk_size': READ_CHUCK_SIZE},
+                     verify=VERIFY)
     if r.status_code != 200:
         print(r.status_code, r.text)
         sys.exit(-1)
@@ -326,6 +327,7 @@ if __name__ == '__main__':
     parser.add_argument('--restore-precision', help='restore precision: ns,u,ms,s,m,h. Default: ns', default='ns')
     parser.add_argument('--restore-chunk-delay', help='restore delay in sec or subsec between chunks of %d points' % WRITE_CHUNK_SIZE)
     parser.add_argument('--restore-measurement-delay', help='restore delay in sec or subsec between measurements')
+    parser.add_argument('--unsafe-ssl', action='store_true', help='disable tls/ssl certificates verification')
     args = parser.parse_args()
 
     if 'REQUESTS_CA_BUNDLE' not in os.environ:
@@ -337,6 +339,7 @@ if __name__ == '__main__':
         password = getpass.getpass()
 
     AUTH = (args.user, password)
+    VERIFY = not args.unsafe_ssl
     DIR = args.dir
     GZIP = args.gzip
     RETENTION = args.retention
