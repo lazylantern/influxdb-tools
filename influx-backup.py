@@ -22,7 +22,7 @@ WRITE_CHUNK_SIZE = 5000
 
 def query_influxdb(params):
     """Run query on influxdb."""
-    r = requests.get(URL+'/query', auth=AUTH, params=params,  verify=VERIFY)
+    r = requests.get(URL+'/query', auth=AUTH, params=params, verify=VERIFY)
     if r.status_code != 200:
         print(params)
         print(r.status_code, r.text)
@@ -208,7 +208,8 @@ def write_points(db, lines, chunk_delay, precision):
                 return
 
             last_error = f' {r.status_code} HTTP error, {r.text}'
-        except:
+        except Exception as e:
+            print(e)
             last_error = sys.exc_info()[0]
 
         retries -= 1
