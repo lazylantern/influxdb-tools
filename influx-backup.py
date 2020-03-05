@@ -199,7 +199,7 @@ def write_points(db, lines, chunk_delay, precision):
     retries = 10
     while retries > 0:
         try:
-            r = requests.post(URL+'/write', auth=AUTH, params=params, data=data)
+            r = requests.post(URL+'/write', auth=AUTH, params=params, data=data, verify=VERIFY)
             if r.status_code == 204:
                 return
 
